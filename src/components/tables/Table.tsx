@@ -4,13 +4,24 @@ import { Table as TableType } from '../../types';
 
 interface TableProps {
   table: TableType;
+  pageBounds: {
+    width: number;
+    height: number;
+  };
 }
 
-export function Table({ table }: TableProps) {
+export function Table({ table, pageBounds }: TableProps) {
   const {attributes, listeners, setNodeRef, transform} = useDraggable({
     id: table.id,
     data: table
   });
+
+  // Calculate bounded position
+  const boundedTransform = transform ? {
+    ...transform,
+    x: Math.max(0, Math.min(transform.x, pageBounds.width - table.size.width - table.position.x)),
+    y: Math.max(0, Math.min(transform.y, pageBounds.height - table.size.height - table.position.y)),
+  } : null;
 
   const style = {
     position: 'absolute' as const,
@@ -18,7 +29,7 @@ export function Table({ table }: TableProps) {
     top: table.position.y,
     width: table.size.width,
     height: table.size.height,
-    transform: CSS.Translate.toString(transform),
+    transform: boundedTransform ? CSS.Translate.toString(boundedTransform) : undefined,
   };
 
   return (

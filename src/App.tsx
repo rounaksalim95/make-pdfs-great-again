@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Sidebar } from './components/layout/Sidebar';
 import { Canvas } from './components/pages/Canvas';
 import { Page, Table } from './types';
+import { PAGE_WIDTH, PAGE_HEIGHT } from './lib/constants';
 import './App.css';
 
 function App() {
@@ -27,10 +28,19 @@ function App() {
   };
 
   const addNewTable = () => {
+    const defaultWidth = Math.min(200, PAGE_WIDTH - 100); // Leave some margin
+    const defaultHeight = Math.min(100, PAGE_HEIGHT - 100); // Leave some margin
+
     const newTable: Table = {
       id: crypto.randomUUID(),
-      position: { x: 50, y: 50 },
-      size: { width: 200, height: 100 }
+      position: {
+        x: Math.max(0, Math.min(50, PAGE_WIDTH - defaultWidth)),
+        y: Math.max(0, Math.min(50, PAGE_HEIGHT - defaultHeight))
+      },
+      size: {
+        width: defaultWidth,
+        height: defaultHeight
+      }
     };
 
     setPages(pages.map(page => 

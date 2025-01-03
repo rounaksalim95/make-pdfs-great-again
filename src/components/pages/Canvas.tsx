@@ -1,6 +1,7 @@
 import { DndContext, DragEndEvent, useSensor, useSensors, PointerSensor } from '@dnd-kit/core';
 import { Table as TableType } from '../../types';
 import { Table } from '../tables/Table';
+import { PAGE_WIDTH, PAGE_HEIGHT } from '../../lib/constants';
 
 interface CanvasProps {
   tables: TableType[];
@@ -22,9 +23,17 @@ export function Canvas({ tables, onTableMove }: CanvasProps) {
     if (onTableMove) {
       const table = tables.find(t => t.id === active.id);
       if (table) {
+        // Calculate new position
+        const newX = table.position.x + delta.x;
+        const newY = table.position.y + delta.y;
+
+        // Constrain to page bounds
+        const boundedX = Math.max(0, Math.min(newX, PAGE_WIDTH - table.size.width));
+        const boundedY = Math.max(0, Math.min(newY, PAGE_HEIGHT - table.size.height));
+
         onTableMove(table.id, {
-          x: table.position.x + delta.x,
-          y: table.position.y + delta.y,
+          x: boundedX,
+          y: boundedY,
         });
       }
     }
@@ -33,9 +42,22 @@ export function Canvas({ tables, onTableMove }: CanvasProps) {
   return (
     <div className="flex-1 p-8">
       <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-        <div className="bg-white shadow-lg w-[8.5in] h-[11in] mx-auto relative">
+        <div 
+          className="bg-white shadow-lg mx-auto relative"
+          style={{
+            width: PAGE_WIDTH,
+            height: PAGE_HEIGHT,
+          }}
+        >
           {tables.map(table => (
-            <Table key={table.id} table={table} />
+            <Table 
+              key={table.id} 
+              table={table}
+              pageBounds={{
+                width: PAGE_WIDTH,
+                height: PAGE_HEIGHT
+              }}
+            />
           ))}
         </div>
       </DndContext>
