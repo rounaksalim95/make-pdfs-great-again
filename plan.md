@@ -8,12 +8,12 @@ The user can create new pages and add tables to these new pages. Each page is an
 
 - [x] The user can create new pages
 - [x] The user can delete pages
-- [ ] The app has its own simple pixel based layout system
-- [ ] The user can drag and drop tables on a page
+- [x] The app has its own simple pixel based layout system
+- [x] The user can drag and drop tables on a page
 - [ ] The user can resize tables
 - [ ] The user can delete tables
-- [ ] The user can move tables around the page
-- [ ] The user can have multiple tables on a page
+- [x] The user can move tables around the page
+- [x] The user can have multiple tables on a page
 - [x] There is no backend so all state can be stored and handled in the client
 
 # Technologies
@@ -34,13 +34,19 @@ The following technologies are being used in this project:
 3. Page management system (create/delete pages)
 4. Basic layout with sidebar and main content area
 5. Letter-size page canvas setup
+6. Table drag and drop with bounds checking
+7. Page preview thumbnails in sidebar
+8. Pixel-based layout system with proper page dimensions
 
 ## In Progress
-1. Implementing drag and drop system for tables
-2. Table management system (create/delete/resize)
+1. Implementing table resizing with:
+   - Corner resize handles
+   - Minimum size constraints
+   - Bounds checking to keep tables within page
+   - Aspect ratio preservation (optional with shift key)
 
 ## Next Steps
-1. Implement table drag and drop functionality using DND Kit
-2. Add table resizing capabilities
-3. Create table deletion feature
-4. Implement table movement within pages
+1. Add table deletion functionality
+2. Add table content/data management
+3. Add table styling options
+4. Implement undo/redo functionality

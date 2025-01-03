@@ -6,9 +6,10 @@ import { PAGE_WIDTH, PAGE_HEIGHT } from '../../lib/constants';
 interface CanvasProps {
   tables: TableType[];
   onTableMove?: (tableId: string, position: { x: number; y: number }) => void;
+  onTableResize?: (tableId: string, size: { width: number; height: number }, position: { x: number; y: number }) => void;
 }
 
-export function Canvas({ tables, onTableMove }: CanvasProps) {
+export function Canvas({ tables, onTableMove, onTableResize }: CanvasProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -57,6 +58,7 @@ export function Canvas({ tables, onTableMove }: CanvasProps) {
                 width: PAGE_WIDTH,
                 height: PAGE_HEIGHT
               }}
+              onResize={onTableResize}
             />
           ))}
         </div>

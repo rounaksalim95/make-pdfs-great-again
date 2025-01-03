@@ -65,6 +65,29 @@ function App() {
     ));
   };
 
+  const handleTableResize = (
+    tableId: string,
+    newSize: { width: number; height: number },
+    newPosition: { x: number; y: number }
+  ) => {
+    setPages(pages.map(page => 
+      page.id === selectedPage
+        ? {
+            ...page,
+            tables: page.tables.map(table =>
+              table.id === tableId
+                ? { 
+                    ...table, 
+                    size: newSize,
+                    position: newPosition
+                  }
+                : table
+            )
+          }
+        : page
+    ));
+  };
+
   const currentPage = pages.find(page => page.id === selectedPage);
 
   return (
@@ -88,6 +111,7 @@ function App() {
         <Canvas 
           tables={currentPage?.tables || []} 
           onTableMove={handleTableMove}
+          onTableResize={handleTableResize}
         />
       </div>
     </div>
