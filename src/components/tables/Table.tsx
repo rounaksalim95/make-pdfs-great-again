@@ -58,8 +58,8 @@ export function Table({ table, pageBounds, onResize, onExpand }: TableProps) {
       {...(!isResizing ? attributes : {})}
     >
       <div className="w-full h-full bg-white border border-gray-300 hover:border-blue-500">
-        <div className="w-full h-full overflow-auto">
-          <table className="w-full">
+        <div className="w-full h-full">
+          <table className="w-full h-full">
             <thead className="bg-gray-50 sticky top-0">
               <tr>
                 <th colSpan={4} className="px-4 py-2 text-left font-medium text-gray-500 border-b">
