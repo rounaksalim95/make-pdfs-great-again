@@ -2,6 +2,7 @@ import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Table as TableType } from '../../types';
 import { useResize } from '../../hooks/useResize';
+import { ArrowsPointingOutIcon } from '@heroicons/react/24/outline';
 
 interface TableProps {
   table: TableType;
@@ -10,9 +11,10 @@ interface TableProps {
     height: number;
   };
   onResize?: (tableId: string, size: { width: number; height: number }, position: { x: number; y: number }) => void;
+  onExpand?: (tableId: string) => void;
 }
 
-export function Table({ table, pageBounds, onResize }: TableProps) {
+export function Table({ table, pageBounds, onResize, onExpand }: TableProps) {
   const {attributes, listeners, setNodeRef, transform} = useDraggable({
     id: table.id,
     data: table
@@ -59,6 +61,29 @@ export function Table({ table, pageBounds, onResize }: TableProps) {
         <div className="w-full h-full overflow-auto">
           <table className="w-full">
             <thead className="bg-gray-50 sticky top-0">
+              <tr>
+                <th colSpan={4} className="px-4 py-2 text-left font-medium text-gray-500 border-b">
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center space-x-2">
+                      <span>Table {table.pageNumber ? `${table.pageNumber}/${table.totalPages}` : ''}</span>
+                      {!table.originalTableId && (
+                        <button
+                          onClick={() => onExpand?.(table.id)}
+                          className="p-1 hover:bg-gray-100 rounded"
+                          title="Expand table across pages"
+                        >
+                          <ArrowsPointingOutIcon className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                    {table.originalTableId && (
+                      <span className="text-sm text-gray-400">
+                        Showing rows {table.startRow! + 1}-{table.endRow!}
+                      </span>
+                    )}
+                  </div>
+                </th>
+              </tr>
               <tr>
                 <th className="px-4 py-2 text-left font-medium text-gray-500 border-b">Id</th>
                 <th className="px-4 py-2 text-left font-medium text-gray-500 border-b">Name</th>

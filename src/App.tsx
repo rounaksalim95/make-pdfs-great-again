@@ -3,6 +3,7 @@ import { Sidebar } from './components/layout/Sidebar';
 import { Canvas } from './components/pages/Canvas';
 import { Page, Table } from './types';
 import { PAGE_WIDTH, PAGE_HEIGHT } from './lib/constants';
+import { calculatePageCapacity, distributeTableAcrossPages } from './lib/pagination';
 import './App.css';
 
 // Dummy data for tables
@@ -103,6 +104,42 @@ function App() {
     ));
   };
 
+  const handleTableExpand = (tableId: string) => {
+    const currentPageIndex = pages.findIndex(p => p.id === selectedPage);
+    const table = pages[currentPageIndex].tables.find(t => t.id === tableId);
+    
+    if (!table) return;
+
+    const { rowsPerPage } = calculatePageCapacity();
+    const { pages: pagedTables, expandedState } = distributeTableAcrossPages(table, selectedPage, rowsPerPage);
+
+    // Create new pages for the expanded table
+    const updatedPages = [...pages];
+    
+    // Update the first page (current page)
+    updatedPages[currentPageIndex] = {
+      ...updatedPages[currentPageIndex],
+      tables: updatedPages[currentPageIndex].tables.map(t => 
+        t.id === tableId ? pagedTables[0].table : t
+      ),
+      expandedTables: [
+        ...(updatedPages[currentPageIndex].expandedTables || []),
+        expandedState
+      ]
+    };
+
+    // Insert new pages after the current page
+    const newPages = pagedTables.slice(1).map(({ id, table }) => ({
+      id,
+      tables: [table],
+      expandedTables: []
+    }));
+
+    updatedPages.splice(currentPageIndex + 1, 0, ...newPages);
+
+    setPages(updatedPages);
+  };
+
   const currentPage = pages.find(page => page.id === selectedPage);
 
   return (
@@ -127,6 +164,7 @@ function App() {
           tables={currentPage?.tables || []} 
           onTableMove={handleTableMove}
           onTableResize={handleTableResize}
+          onTableExpand={handleTableExpand}
         />
       </div>
     </div>

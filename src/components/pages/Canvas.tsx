@@ -2,14 +2,16 @@ import { DndContext, DragEndEvent, useSensor, useSensors, PointerSensor } from '
 import { Table as TableType } from '../../types';
 import { Table } from '../tables/Table';
 import { PAGE_WIDTH, PAGE_HEIGHT } from '../../lib/constants';
+import { isTableOverflowing } from '../../lib/pagination';
 
 interface CanvasProps {
   tables: TableType[];
   onTableMove?: (tableId: string, position: { x: number; y: number }) => void;
   onTableResize?: (tableId: string, size: { width: number; height: number }, position: { x: number; y: number }) => void;
+  onTableExpand?: (tableId: string) => void;
 }
 
-export function Canvas({ tables, onTableMove, onTableResize }: CanvasProps) {
+export function Canvas({ tables, onTableMove, onTableResize, onTableExpand }: CanvasProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -19,7 +21,6 @@ export function Canvas({ tables, onTableMove, onTableResize }: CanvasProps) {
   );
 
   const handleDragEnd = (event: DragEndEvent) => {
-    console.log('unakor: handleDragEnd', event);
     const { active, delta } = event;
     
     if (onTableMove) {
@@ -60,6 +61,7 @@ export function Canvas({ tables, onTableMove, onTableResize }: CanvasProps) {
                 height: PAGE_HEIGHT
               }}
               onResize={onTableResize}
+              onExpand={!table.originalTableId && isTableOverflowing(table) ? onTableExpand : undefined}
             />
           ))}
         </div>
