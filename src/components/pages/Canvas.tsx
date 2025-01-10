@@ -19,6 +19,7 @@ export function Canvas({ tables, onTableMove, onTableResize }: CanvasProps) {
   );
 
   const handleDragEnd = (event: DragEndEvent) => {
+    console.log('unakor: handleDragEnd', event);
     const { active, delta } = event;
     
     if (onTableMove) {

@@ -5,6 +5,19 @@ import { Page, Table } from './types';
 import { PAGE_WIDTH, PAGE_HEIGHT } from './lib/constants';
 import './App.css';
 
+// Dummy data for tables
+const generateDummyData = () => {
+  const names = ['Alice', 'Bob', 'Charlie', 'David', 'Eve', 'Frank', 'Grace', 'Henry', 'Ivy', 'Jack'];
+  const locations = ['New York', 'London', 'Paris', 'Tokyo', 'Berlin', 'Sydney', 'Toronto', 'Mumbai', 'Singapore', 'Dubai'];
+  
+  return Array.from({ length: 10 }, (_, i) => ({
+    id: (i + 1).toString(),
+    name: names[i],
+    age: Math.floor(Math.random() * 30) + 25, // Random age between 25-54
+    location: locations[i]
+  }));
+};
+
 function App() {
   const [pages, setPages] = useState<Page[]>([
     { id: '1', tables: [] }
@@ -28,8 +41,8 @@ function App() {
   };
 
   const addNewTable = () => {
-    const defaultWidth = Math.min(200, PAGE_WIDTH - 100); // Leave some margin
-    const defaultHeight = Math.min(100, PAGE_HEIGHT - 100); // Leave some margin
+    const defaultWidth = Math.min(600, PAGE_WIDTH - 100); // Increased default width for table
+    const defaultHeight = Math.min(400, PAGE_HEIGHT - 100); // Increased default height for table
 
     const newTable: Table = {
       id: crypto.randomUUID(),
@@ -40,7 +53,8 @@ function App() {
       size: {
         width: defaultWidth,
         height: defaultHeight
-      }
+      },
+      data: generateDummyData()
     };
 
     setPages(pages.map(page => 

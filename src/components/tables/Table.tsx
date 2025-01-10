@@ -51,12 +51,33 @@ export function Table({ table, pageBounds, onResize }: TableProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`border border-gray-300 bg-white hover:border-blue-500 group ${
+      className={`border border-gray-300 bg-white hover:border-blue-500 group overflow-auto ${
         isResizing ? 'select-none' : ''
       }`}
       {...(!isResizing ? listeners : {})}
       {...(!isResizing ? attributes : {})}
     >
+      <table className="w-full text-sm">
+        <thead className="bg-gray-50 sticky top-0">
+          <tr>
+            <th className="px-4 py-2 text-left font-medium text-gray-500">Id</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-500">Name</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-500">Age</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-500">Location</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-200">
+          {table.data?.map((row) => (
+            <tr key={row.id} className="hover:bg-gray-50">
+              <td className="px-4 py-2 text-gray-900">{row.id}</td>
+              <td className="px-4 py-2 text-gray-900">{row.name}</td>
+              <td className="px-4 py-2 text-gray-900">{row.age}</td>
+              <td className="px-4 py-2 text-gray-900">{row.location}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
       {/* Resize handles */}
       <div
         className={`absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full opacity-0 group-hover:opacity-100 cursor-ne-resize ${
