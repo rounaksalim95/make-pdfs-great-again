@@ -44,6 +44,7 @@ let cachedRowHeight: number | null = null;
 let cachedHeaderHeight: number | null = null;
 
 const PAGE_MARGINS = 40; // Total vertical margins (top + bottom)
+const TOP_MARGIN_SUBSEQUENT_PAGES = 50; // Margin for tables on subsequent pages
 
 function getRowHeight(): number {
   if (cachedRowHeight === null) {
@@ -85,8 +86,15 @@ function getHeaderHeight(): number {
   return cachedHeaderHeight;
 }
 
-export function calculatePageCapacity(pageHeight: number = PAGE_HEIGHT): PageCapacity {
-  const availableHeight = pageHeight - PAGE_MARGINS;
+export function calculatePageCapacity(pageHeight: number = PAGE_HEIGHT, isFirstPage: boolean = true, tableY: number = 0): PageCapacity {
+  const PAGE_MARGINS = 40; // Total vertical margins (top + bottom)
+  const TOP_MARGIN_SUBSEQUENT_PAGES = 50; // Margin for tables on subsequent pages
+  
+  // For first page, account for table's Y position
+  // For subsequent pages, use a fixed top margin
+  const topOffset = isFirstPage ? tableY : TOP_MARGIN_SUBSEQUENT_PAGES;
+  
+  const availableHeight = pageHeight - PAGE_MARGINS - topOffset;
   const headerHeight = getHeaderHeight();
   const effectiveHeight = availableHeight - headerHeight;
   const rowHeight = getRowHeight();
@@ -103,43 +111,57 @@ export function calculatePageCapacity(pageHeight: number = PAGE_HEIGHT): PageCap
 export function distributeTableAcrossPages(
   table: Table,
   currentPageId: string,
-  rowsPerPage: number
+  _rowsPerPage: number
 ): { pages: { id: string; table: Table }[]; expandedState: { originalTableId: string; pageIds: string[]; currentPage: number; totalPages: number; } } {
   const totalRows = table.data.length;
-  const totalPages = Math.ceil(totalRows / rowsPerPage);
+  
+  // Calculate capacity for first page considering table's position
+  const firstPageCapacity = calculatePageCapacity(PAGE_HEIGHT, true, table.position.y);
+  // Calculate capacity for subsequent pages
+  const subsequentPageCapacity = calculatePageCapacity(PAGE_HEIGHT, false);
+  
+  // First page can hold fewer rows due to table position
+  let remainingRows = totalRows;
+  let currentRow = 0;
   const pages: { id: string; table: Table }[] = [];
   const pageIds: string[] = [];
-
-  for (let i = 0; i < totalPages; i++) {
-    const startRow = i * rowsPerPage;
-    const endRow = Math.min(startRow + rowsPerPage, totalRows);
-    const pageId = i === 0 ? currentPageId : crypto.randomUUID();
+  let pageNumber = 1;
+  
+  while (remainingRows > 0) {
+    const isFirstPage = pageNumber === 1;
+    const capacity = isFirstPage ? firstPageCapacity : subsequentPageCapacity;
+    const rowsForThisPage = Math.min(capacity.rowsPerPage, remainingRows);
+    const pageId = isFirstPage ? currentPageId : crypto.randomUUID();
     pageIds.push(pageId);
-
+    
     const pagedTable: Table = {
       ...table,
-      id: i === 0 ? table.id : crypto.randomUUID(),
+      id: isFirstPage ? table.id : crypto.randomUUID(),
       originalTableId: table.id,
       isExpanded: true,
-      pageNumber: i + 1,
-      totalPages,
-      startRow,
-      endRow,
-      data: table.data.slice(startRow, endRow),
-      position: i === 0 ? table.position : { x: 50, y: 50 }, // Position subsequent tables at the top of new pages
+      pageNumber,
+      totalPages: Math.ceil((totalRows - firstPageCapacity.rowsPerPage) / subsequentPageCapacity.rowsPerPage) + 1,
+      startRow: currentRow,
+      endRow: currentRow + rowsForThisPage,
+      data: table.data.slice(currentRow, currentRow + rowsForThisPage),
+      position: isFirstPage ? table.position : { x: 50, y: TOP_MARGIN_SUBSEQUENT_PAGES },
     };
-
+    
     pages.push({
       id: pageId,
       table: pagedTable
     });
+    
+    remainingRows -= rowsForThisPage;
+    currentRow += rowsForThisPage;
+    pageNumber++;
   }
 
   const expandedState = {
     originalTableId: table.id,
     pageIds,
     currentPage: 1,
-    totalPages
+    totalPages: pages.length
   };
 
   return { pages, expandedState };

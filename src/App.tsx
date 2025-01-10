@@ -3,7 +3,7 @@ import { Sidebar } from './components/layout/Sidebar';
 import { Canvas } from './components/pages/Canvas';
 import { Page, Table } from './types';
 import { PAGE_WIDTH, PAGE_HEIGHT } from './lib/constants';
-import { calculatePageCapacity, distributeTableAcrossPages } from './lib/pagination';
+import { distributeTableAcrossPages } from './lib/pagination';
 import './App.css';
 
 // Dummy data for tables
@@ -110,9 +110,8 @@ function App() {
     
     if (!table) return;
 
-    const { rowsPerPage } = calculatePageCapacity();
-    const { pages: pagedTables, expandedState } = distributeTableAcrossPages(table, selectedPage, rowsPerPage);
-
+    const { pages: pagedTables, expandedState } = distributeTableAcrossPages(table, selectedPage, 0);
+    
     // Create new pages for the expanded table
     const updatedPages = [...pages];
     
