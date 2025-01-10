@@ -7,14 +7,15 @@ import './App.css';
 
 // Dummy data for tables
 const generateDummyData = () => {
-  const names = ['Alice', 'Bob', 'Charlie', 'David', 'Eve', 'Frank', 'Grace', 'Henry', 'Ivy', 'Jack'];
-  const locations = ['New York', 'London', 'Paris', 'Tokyo', 'Berlin', 'Sydney', 'Toronto', 'Mumbai', 'Singapore', 'Dubai'];
+  const firstNames = ['Alice', 'Bob', 'Charlie', 'David', 'Eve', 'Frank', 'Grace', 'Henry', 'Ivy', 'Jack', 'Karen', 'Leo', 'Mary', 'Nathan', 'Olivia', 'Peter', 'Quinn', 'Rachel', 'Sam', 'Tom'];
+  const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin'];
+  const cities = ['New York', 'London', 'Paris', 'Tokyo', 'Berlin', 'Sydney', 'Toronto', 'Mumbai', 'Singapore', 'Dubai', 'Hong Kong', 'Seoul', 'Moscow', 'Madrid', 'Rome', 'Amsterdam', 'Stockholm', 'Vienna', 'Bangkok', 'Cairo'];
   
-  return Array.from({ length: 10 }, (_, i) => ({
+  return Array.from({ length: 100 }, (_, i) => ({
     id: (i + 1).toString(),
-    name: names[i],
-    age: Math.floor(Math.random() * 30) + 25, // Random age between 25-54
-    location: locations[i]
+    name: `${firstNames[i % firstNames.length]} ${lastNames[i % lastNames.length]}`,
+    age: Math.floor(Math.random() * 40) + 25, // Random age between 25-64
+    location: cities[i % cities.length]
   }));
 };
 
